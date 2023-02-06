@@ -51,7 +51,7 @@ const createReceiver = async (req, res) => {
  const bloodSampleRequest = async (req, res) => {
     try {
       const request = new BloodSampleRequested({
-        receiverId: req.receiver._id,
+        receiver: req.body.receiver,
         bloodGroup: req.body.bloodGroup,
         quantity: req.body.quantity
       });

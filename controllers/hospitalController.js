@@ -47,30 +47,6 @@ const hospitalLogin = async (req, res) => {
   
   
   
-  
-// const hospitalLogin = async (req, res) => {
-//   const email = req.body.email;
-//   const password = req.body.password;
-
-//   try {
-//     const hospital = await Hospital.findOne({ email: email });
-//     if (!hospital) {
-//       return res.status(404).send();
-//     }
-
-//     const isMatch = await bcrypt.compare(password, hospital.password);
-//     if (isMatch) {
-//       res.send(hospital);
-//     } else {
-//       res.status(401).send("Unauthorized");
-//     }
-//   } catch (error) {
-//     res.status(500).send(error);
-//   }
-// }
-
-
-
 
 // GET endpoint to get the list of all blood samples available in all hospitals
 const allSample= async (req, res) => {
@@ -86,9 +62,9 @@ const allSample= async (req, res) => {
   const addSample =async (req, res) => {
   try {
   const sample = new BloodSample({
-  hospitalId: req.hospital._id,
+  hospital: req.hospital._id,
   bloodGroup: req.body.bloodGroup,
-  quantity: req.body.quantity,
+  units: req.body.units,
   });
   const savedSample = await sample.save();
   res.send(savedSample);
@@ -102,14 +78,13 @@ const allSample= async (req, res) => {
   try {
   const sample = await BloodSample.findOne({
   _id: req.params.id,
-  hospitalId: req.hospital._id,
+  hospitalId: req.body.hospital
   });
   if (!sample) {
   return res.status(404).send();
   }
-  sample.bloodGroup = req.body.bloodGroup;
-  sample.quantity = req.body.quantity;
-  const updatedSample = await sample.save();
+  let data = req.body
+  const updatedSample = await BloodSample.findByIdAndUpdate({_id: req.params.id,hospitalId: req.body.hospital},data,{new:true});
   res.send(updatedSample);
   } catch (error) {
   res.status(500).send(error);
@@ -121,22 +96,22 @@ const allSample= async (req, res) => {
   try {
   const sample = await BloodSample.findOne({
   _id: req.params.id,
-  hospitalId: req.hospital._id,
+  hospitalId: req.body.hospital,
   });
   if (!sample) {
   return res.status(404).send();
   }
   await sample.remove();
-  res.send(sample);
+  res.send({msg :"sample is deleted successfully"});
   } catch (error) {
   res.status(500).send(error);
   }
   }
   
-      // GET endpoint to get all the blood info that the hospital uploaded
+// GET endpoint to get all the blood info that the hospital uploaded
   const hospitalListOfSample =async (req, res) => {
       try {
-        const samples = await BloodSample.find({ hospitalId: req.hospital._id });
+        const samples = await BloodSample.find({ hospital: req.params.id });
         res.send(samples);
       } catch (error) {
         res.status(500).send(error);

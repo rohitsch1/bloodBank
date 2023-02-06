@@ -5,9 +5,13 @@ const Receiver = require('../models/receiver');
 const auth = async (req, res, next) => {
   try {
     const token = req.header('Authorization').replace('Bearer ', '');
+    // console.log(token)
     const decoded = jwt.verify(token, "assignment101");
-    const hospital = await Hospital.findOne({ _id: decoded._id, 'tokens.token': token });
-    const receiver = await Receiver.findOne({ _id: decoded._id, 'tokens.token': token });
+    // console.log(decoded)
+    const hospital = await Hospital.findOne({ _id: decoded.hospitalId, });
+    // console.log(hospital)
+    const receiver = await Receiver.findOne({ _id: decoded.receiverId, });
+    // console.log(receiver)
 
     if (!hospital && !receiver) {
       throw new Error();
