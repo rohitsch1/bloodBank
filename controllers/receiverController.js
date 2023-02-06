@@ -1,10 +1,7 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const BloodSample = require("../models/bloodSample");
 const BloodSampleRequested = require("../models/bloodSampleRequested");
-const Hospital = require("../models/hospital");
-const Receiver = require("../models/receiver");
+const receiverModel = require("../models/receiver");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken")
 
 
 const createReceiver = async (req, res) => {
@@ -15,7 +12,7 @@ const createReceiver = async (req, res) => {
       const hash = await bcrypt.hash(data.password, salt);
       data.password = hash;
         console.log(data)
-      const savedReceiver = await Receiver.create(data)
+      const savedReceiver = await receiverModel.create(data)
     //   console.log(savedReceiver)
       res.send({savedReceiver});
     } catch (error) {
@@ -29,7 +26,7 @@ const createReceiver = async (req, res) => {
     const password = req.body.password;
     
     try {
-    const receiver = await Hospital.findOne({ email: email });
+    const receiver = await receiverModel.findOne({ email: email });
     console.log(receiver)
     if (!receiver) {
     return res.status(404).send({msg : "Document not found"});
@@ -52,10 +49,17 @@ const createReceiver = async (req, res) => {
     try {
       const request = new BloodSampleRequested({
         receiver: req.body.receiver,
+        bloodSample:req.body.bloodSample,
         bloodGroup: req.body.bloodGroup,
-        quantity: req.body.quantity
+        quantity: req.body.quantity,
+        status: req.body.status
       });
       const savedRequest = await request.save();
+      const addAttribute = await receiverModel.findOneAndUpdate({_id:req.body.receiver},{
+        $push:{
+          bloodSampleRequests:savedRequest
+        }
+      },{new:true})
       res.send(savedRequest);
     } catch (error) {
       res.status(400).send(error);

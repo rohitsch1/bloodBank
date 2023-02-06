@@ -5,7 +5,7 @@ const app=express()
 
 //connecting Mongodb 
 mongoose.set('strictQuery', true);
-mongoose.connect("mongodb+srv://Rohitsch:S*Crohit16@cluster0.31aen.mongodb.net/bloodBank",{
+mongoose.connect("mongodb+srv://Rohitsch:S*Crohit16@cluster0.31aen.mongodb.net/bloodSample",{
     useNewUrlParser: true,
     useUnifiedTopology: true
 
