@@ -122,7 +122,7 @@ const allSample= async (req, res) => {
 const requestedReceivers = async (req, res) => {
     try {
       const requests = await BloodSampleRequested.find({ bloodGroup: req.params.bloodGroup });
-      const receiverIds = requests.map(request => request.receiverId);
+      const receiverIds = requests.map(request => request.receiver);
       const receivers = await Receiver.find({ _id: { $in: receiverIds } });
       res.send(receivers);
     } catch (error) {
